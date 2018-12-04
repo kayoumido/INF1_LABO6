@@ -5,11 +5,12 @@
  Auteur(s)   : Emmanuel Janssens, Sylvain Laydernier, Doran Kayoumi
  Date        : 28.11.2018
 
- But         : Transform numerical data into his corresponding string
-               (3214 become "trois mille deux cent quatorze")
-
- Remarque(s) : We decided to round user's input instead of returning error message
-               for numbers like 52.99893 (become 53.00) or 52.523304 (become 52.52)
+ But         : Transforme une somme numérique en une version textuelle
+               e.g. 3214 => trois mille deux cent quatorze
+               
+ Remarque(s) : Nous avons décidé d'arrondir les données saisies par l'utilisateur
+               au lieu de retourner un message d'erreur.
+               e.g. 52.99893 => 53.00, 52.523304 => 52.52
  Compilateur : g++<6.3.0>
  -----------------------------------------------------------------------------------
  */
@@ -23,10 +24,17 @@ const double MIN_AMOUNT = 0;
 const double MAX_AMOUNT = 999999.99;
 
 /**
- * Convert a double number in a Vaudois price.
+ * @brief Translates real numbers into prices expressed in vaudois
+ * @details E.g.
+ *   12.30  -> "douze francs et trente centimes"
+ *   200.01 -> "deux cents francs et un centime"
+ *   180    -> "cent huitante francs"
+ *   1.80   -> "un franc et huitante centimes"
+ *   0.20   -> "vingt centimes"
+ *   0      -> "zéro franc"
  *
- * @param amount a double between 0 and 999999.99
- * @return the converted amount in a string
+ * @param[double] amount between 0 and 999999.99
+ * @return[string] string of the amount in vaudois
  */
 string montantEnVaudois(double amount);
 
@@ -36,20 +44,20 @@ string montantEnVaudois(double amount);
  * @param[double] input user's input to check
  * @param[double] min minimum accepted value
  * @param[double] max maximum accepted value
- * @return[bool] result of condition
+ * @return[bool] true if hte value in the range otherwise false
  */
 bool checkInput(double input, double min, double max);
 
 /**
  * @brief return corresponding text to the 0-9 integer
- * @param[int] unit to convert to text (0-9)
  *
+ * @param[int] unit to convert to text (0-9)
  * @return[int] text in a string
  */
 string getUnitText(int number);
 
 /**
- * @brief return corresponding text to the selected teen (11-16)
+ * @brief get corresponding text to the selected teen (11-16)
  *
  * @param teen to convert to text (11-16)
  * @return teen's text in a string
@@ -57,7 +65,7 @@ string getUnitText(int number);
 string getTeensText(int number);
 
 /**
- * @brief return corresponding text to the given dozen number
+ * @brief get corresponding text to the given dozen number
  *
  * @param dozen to convert to text
  * @return dozen's text in a string
@@ -65,7 +73,7 @@ string getTeensText(int number);
 string getDozenText(int number);
 
 /**
- * @brief return corresponding text to the given hundred number.
+ * @brief get corresponding text to the given hundred number.
  * which equals to the number with the suffix "cent".
  *
  * @param hundred to convert to text
@@ -74,24 +82,24 @@ string getDozenText(int number);
 string getHundredText(int number);
 
 /**
- * @brief return the name of a number group.
- *  e.g. 1200 is composed of two groups of 3 :
- *      1 and 200. the first groups name is "mille" and the second ""
+ * @brief get the text to display for a group of 3 numbers
+ * @details e.g. 
+ *     The number 123456 can be split into two groups of 3 :
+ *        1. "123" wich is the thousands or "mille" in vaudois
+ *        2. "456" wich doesn't have a text to display
  *
  * @param[int] groupNumber
- * @return the group name
+ * @return[string] the text of the group
  */
 string getGroupText(int groupNumber);
 
 /**
- * @brief Convert integer parts of an entered number into a string
- * adding franc(s) and dealing with plural
+ * @brief convert a into it's textual equivilent with the currency suffix
  *
- * @param[int] number to get as text
+ * @param[int] number to convert
  * @param[bool] accord boolean to decide if we need to accord the text
- * @param[string] groupNumberName Text to add to the group number, 
- * exemple : 3230 = "mille" or 3'243'313 = "million"
- *
+ * @param[string] groupNumberName the specific text to add for a given
+ *                group. (see getGroupText function)
  * @return[string] text of the converted number with the currency suffix
  */
 string convertFrancs(int number, bool accord, const string &groupNumberName);

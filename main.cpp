@@ -8,8 +8,8 @@
  But         : Transform numerical data into his corresponding string
                (3214 become "trois mille deux cent quatorze")
 
- Remarque(s) :
-
+ Remarque(s) : We decided to round user's input instead of returning error message
+               for numbers like 52.99893 (become 53.00) or 52.523304 (become 52.52)
  Compilateur : g++<6.3.0>
  -----------------------------------------------------------------------------------
  */
@@ -89,6 +89,9 @@ string getGroupText(int groupNumber);
  *
  * @param[int] number to get as text
  * @param[bool] accord boolean to decide if we need to accord the text
+ * @param[string] groupNumberName Text to add to the group number, 
+ * exemple : 3230 = "mille" or 3'243'313 = "million"
+ *
  * @return[string] text of the converted number with the currency suffix
  */
 string convertFrancs(int number, bool accord, const string &groupNumberName);
@@ -260,6 +263,8 @@ string convertFrancs(int number, bool accord, const string &groupNumberName) {
   if (number >= 100) {
     text += getHundredText(number / 100);
 
+    // when number isn't 100 and we have to accord, check that number divised by 100 has a remainder, 
+    // if so it doesn't accord the text, else it does
     text += number / 100 != 1 and accord ? number % 100 != 0 ? " " : "s" : " ";
     number = number % 100;
 

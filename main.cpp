@@ -232,22 +232,6 @@ string convertFrancs(int number, bool checkGrammar) {
   return text;
 }
 
-string manageThousands(double number) {
-
-  int part1 = int(number / 1000);
-  int part2 = (int) number % 1000;
-
-  string text = "mille";
-
-  // if part1 != 1, we need to add "mille" in the string to return
-  if (part1 != 1) {
-    text = convertFrancs(part1, false) + " " + text;
-  }
-
-  text += " " + convertFrancs(part2, true);
-  return text;
-}
-
 string convertCents(int number) {
   string text = convertFrancs(number, true) + " " + CURRENCY_CENTS;
   text += number > 1 ? "s" : "";

@@ -20,76 +20,84 @@ using namespace std;
 const string CURRENCY = "franc";
 const string CURRENCY_CENTS = "centime";
 const double MIN_AMOUNT = 0;
-const double  MAX_AMOUNT = 999999.99;
+const double MAX_AMOUNT = 999999.99;
 
 /**
  * Convert a double number in a Vaudois price.
- * @param amount a double between 0 and 999999.99
  *
+ * @param amount a double between 0 and 999999.99
  * @return the converted amount in a string
  */
 string montantEnVaudois(double amount);
 
 /**
  * @brief check if user's input is between min and max values
- * @param input user's input to check
- * @param min minimum accepted value
- * @param max maximum accepted value
- * @return boolean result of condition
+ *
+ * @param[double] input user's input to check
+ * @param[double] min minimum accepted value
+ * @param[double] max maximum accepted value
+ * @return[bool] result of condition
  */
 bool checkInput(double input, double min, double max);
 
 /**
  * @brief return corresponding text to the 0-9 integer
- * @param unit to convert to text (int 0-9)
+ * @param[int] unit to convert to text (0-9)
  *
- * @return intger's text in a string
+ * @return[int] text in a string
  */
 string getUnitText(int number);
 
 /**
  * @brief return corresponding text to the selected teen (11-16)
- * @param teen to convert to text (11-16)
  *
+ * @param teen to convert to text (11-16)
  * @return teen's text in a string
 */
 string getTeensText(int number);
 
 /**
- * @brief return corresponding text to the entered dozen
- * @param dozen to convert to text
+ * @brief return corresponding text to the given dozen number
  *
+ * @param dozen to convert to text
  * @return dozen's text in a string
  */
 string getDozenText(int number);
 
 /**
- * @brief return corresponding text to the selected hundred with suffix "cent"
- * if hundred is one, don't add any suffix
- * @param hundred to convert to text
+ * @brief return corresponding text to the given hundred number.
+ * which equals to the number with the suffix "cent".
  *
+ * @param hundred to convert to text
  * @return hundred's text in a string
  */
 string getHundredText(int number);
 
+/**
+ * @brief return the name of a number group.
+ *  e.g. 1200 is composed of two groups of 3 :
+ *      1 and 200. the first groups name is "mille" and the second ""
+ *
+ * @param[int] groupNumber
+ * @return the group name
+ */
 string getGroupText(int groupNumber);
 
-/*
+/**
  * @brief Convert integer parts of an entered number into a string
  * adding franc(s) and dealing with plural
- * @param[int] number number to get as text
- * @param[bool] checkGrammar boolean to decide if we need to check
- * grammar or not
  *
- * @return entire string of a number with "franc" or "francs" suffix
+ * @param[int] number to get as text
+ * @param[bool] accord boolean to decide if we need to accord the text
+ * @return[string] text of the converted number with the currency suffix
  */
 string convertFrancs(int number, bool accord, string groupNumberName);
 
 /*
  * @brief convert a given number to a cents part as a string
  * including "centimes" as suffix
- * @param int to convert as text
  *
+ * @param int to convert as text
  * @return parameter's corresponding text
  */
 string convertCents(int number);

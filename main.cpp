@@ -72,6 +72,8 @@ string getDozenText(int number);
  */
 string getHundredText(int number);
 
+string getGroupText(int groupNumber);
+
 /*
  * @brief Convert integer parts of an entered number into a string
  * adding franc(s) and dealing with plural
@@ -81,7 +83,7 @@ string getHundredText(int number);
  *
  * @return entire string of a number with "franc" or "francs" suffix
  */
-string convertFrancs(int number, bool checkGrammar);
+string convertFrancs(int number, bool accord, string groupNumberName);
 
 /*
  * @brief convert a given number to a cents part as a string
@@ -103,7 +105,7 @@ int main() {
 }
 
 string montantEnVaudois(double amount) {
-  
+
   if (!checkInput(amount, MIN_AMOUNT, MAX_AMOUNT)) {
     return "ERREUR - Entree non-valide!";
   }
@@ -117,28 +119,25 @@ string montantEnVaudois(double amount) {
   }
 
   int part = francs;
+  int groupNumber = 0;
   bool accord = true;
   string francsText;
   while (part) {
     // get the first three numbers
     int group = part % 1000;
 
-    francsText = convertFrancs(group, accord) + " " + francsText;
+    francsText = convertFrancs(group, accord, getGroupText(groupNumber)) + francsText;
 
     // remove the part that was just converted to text
     part /= 1000;
-    // check if there are anymore numbers to convert
-    if (part) {
-      // if so, then add the thousands text
-      francsText = "mille " + francsText;
-    }
 
     //
     accord = false;
+    ++groupNumber;
   }
 
   // add the currency to the end
-  francsText += CURRENCY;
+  francsText += " " + CURRENCY;
   // check plural
   francsText += francs > 1 ? "s" : "";
 
@@ -151,6 +150,15 @@ string montantEnVaudois(double amount) {
   // build the return text.
   //  if there are francs and cents the return text with both otherwise, return only the one that isn't empty
   return francs and cents ? francsText + " et " + centsText : francs ? francsText : cents ? centsText : "";
+}
+
+string getGroupText(int groupNumber) {
+  switch (groupNumber) {
+    case 1:
+      return " mille ";
+    default:
+      return "";
+  }
 }
 
 string getUnitText(int number) {
@@ -236,13 +244,13 @@ string getHundredText(int number) {
   return text;
 }
 
-string convertFrancs(int number, bool checkGrammar) {
+string convertFrancs(int number, bool accord, string groupNumberName) {
   string text;
 
   if (number >= 100) {
     text += getHundredText(number / 100);
 
-    text += number / 100 != 1 and checkGrammar ? number % 100 != 0 ? " " : "s" : " ";
+    text += number / 100 != 1 and accord ? number % 100 != 0 ? " " : "s" : " ";
     number = number % 100;
 
   }
@@ -261,11 +269,11 @@ string convertFrancs(int number, bool checkGrammar) {
     text += getUnitText(number);
   }
 
-  return text;
+  return text + groupNumberName;
 }
 
 string convertCents(int number) {
-  string text = convertFrancs(number, true) + " " + CURRENCY_CENTS;
+  string text = convertFrancs(number, true, "") + " " + CURRENCY_CENTS;
   text += number > 1 ? "s" : "";
   return text;
 }

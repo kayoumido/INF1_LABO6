@@ -85,8 +85,8 @@ string getHundredText(int number);
  * @brief get the text to display for a group of 3 numbers
  * @details e.g. 
  *     The number 123456 can be split into two groups of 3 :
- *        1. "123" wich is the thousands or "mille" in vaudois
- *        2. "456" wich doesn't have a text to display
+ *        1. "123" which represents the thousands or "mille" in vaudois
+ *        2. "456" which doesn't have any related text to display
  *
  * @param[int] groupNumber
  * @return[string] the text of the group
@@ -94,13 +94,13 @@ string getHundredText(int number);
 string getGroupText(int groupNumber);
 
 /**
- * @brief convert a into it's textual equivilent with the currency suffix
+ * @brief convert a number into it's textual equivalent
  *
  * @param[int] number to convert
  * @param[bool] accord boolean to decide if we need to accord the text
  * @param[string] groupNumberName the specific text to add for a given
  *                group. (see getGroupText function)
- * @return[string] text of the converted number with the currency suffix
+ * @return[string] text of the converted number
  */
 string convertFrancs(int number, bool accord, const string &groupNumberName);
 
@@ -108,8 +108,8 @@ string convertFrancs(int number, bool accord, const string &groupNumberName);
  * @brief convert a given number to a cents part as a string
  * including "centimes" as suffix
  *
- * @param int to convert as text
- * @return parameter's corresponding text
+ * @param[int] cents to convert as text
+ * @return[string] text of the converted number
  */
 string convertCents(int number);
 
@@ -131,10 +131,10 @@ string montantEnVaudois(double amount) {
 
   amount += 0.005;
   // split the francs and the cents
-  int francs = (int) amount;
+  int francs = (int)amount;
   int cents = int((amount - francs) * 100);
 
-  // if the user entered 0 as the amount, return 0
+  // if the user entered 0 as the amount, return the text for 0
   if (francs == 0 and cents == 0) {
     return getUnitText(francs) + " " + CURRENCY;
   }
@@ -144,7 +144,8 @@ string montantEnVaudois(double amount) {
   bool accord = true;
   string francsText;
   while (part) {
-    // get the first three numbers
+
+    // get the current group
     int group = part % 1000;
 
     francsText = convertFrancs(group, accord, getGroupText(groupNumber)) + francsText;
@@ -152,8 +153,14 @@ string montantEnVaudois(double amount) {
     // remove the part that was just converted to text
     part /= 1000;
 
-    //
+    // the groups past the first don't need their
+    // unit, dozens and hundreds to be accorded
+    // since there's a suffix after them and according
+    // to the french grammar rules regarding number,
+    // they don't need to be accorded.
     accord = false;
+
+    // pass to the next group
     ++groupNumber;
   }
 
@@ -271,9 +278,12 @@ string convertFrancs(int number, bool accord, const string &groupNumberName) {
   if (number >= 100) {
     text += getHundredText(number / 100);
 
-    // when number isn't 100 and we have to accord, check that number divised by 100 has a remainder, 
-    // if so it doesn't accord the text, else it does
-    text += number / 100 != 1 and accord ? number % 100 != 0 ? " " : "s" : " ";
+    // the text is accorded only if it's desired.
+    // if it is, then we check that the number isn't 100
+    // and that there isn't anything afterwards.
+    //  e.g. 230 -> doesn't take an "s"
+    //       200 -> takes an "s"
+    text += accord and number / 100 != 1 ? number % 100 != 0 ? " " : "s" : " ";
     number = number % 100;
 
   }

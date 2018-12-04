@@ -102,7 +102,16 @@ string getGroupText(int groupNumber);
  *                group. (see getGroupText function)
  * @return[string] text of the converted number
  */
-string convertFrancs(int number, bool accord, const string &groupNumberName);
+string convertFrancs(int number, bool accord, const string& groupNumberName);
+
+/**
+ * @brief accord a numbers text
+ *
+ * @param[int] number to determine if an accord is needed
+ * @param[string] numberText to accord
+ * @return void
+ */
+void accordNumberText(int number, string& numberText);
 
 /*
  * @brief convert a given number to a cents part as a string
@@ -167,7 +176,8 @@ string montantEnVaudois(double amount) {
   // add the currency to the end
   francsText += " " + CURRENCY;
   // check plural
-  francsText += francs > 1 ? "s" : "";
+  //francsText += francs > 1 ? "s" : "";
+  accordNumberText(francs, francsText);
 
   // check if there are cents to convert.
   string centsText;
@@ -272,7 +282,7 @@ string getHundredText(int number) {
   return text;
 }
 
-string convertFrancs(int number, bool accord, const string &groupNumberName) {
+string convertFrancs(int number, bool accord, const string& groupNumberName) {
   string text;
 
   if (number >= 100) {
@@ -283,7 +293,11 @@ string convertFrancs(int number, bool accord, const string &groupNumberName) {
     // and that there isn't anything afterwards.
     //  e.g. 230 -> doesn't take an "s"
     //       200 -> takes an "s"
-    text += accord and number / 100 != 1 ? number % 100 != 0 ? " " : "s" : " ";
+    if (accord and number % 100 == 0)
+      accordNumberText(number/100, text);
+    else
+      text += " ";
+
     number = number % 100;
 
   }
@@ -318,10 +332,15 @@ string convertFrancs(int number, bool accord, const string &groupNumberName) {
 
 string convertCents(int number) {
   string text = convertFrancs(number, true, "") + " " + CURRENCY_CENTS;
-  text += number > 1 ? "s" : "";
+
+  accordNumberText(number, text);
   return text;
 }
 
 bool checkInput(double input, double min, double max) {
   return input >= min && input <= max;
+}
+
+void accordNumberText(int number, string& numberText) {
+  numberText += number > 1 ? "s" : "";
 }

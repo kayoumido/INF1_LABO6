@@ -91,7 +91,7 @@ string getGroupText(int groupNumber);
  * @param[bool] accord boolean to decide if we need to accord the text
  * @return[string] text of the converted number with the currency suffix
  */
-string convertFrancs(int number, bool accord, string groupNumberName);
+string convertFrancs(int number, bool accord, const string &groupNumberName);
 
 /*
  * @brief convert a given number to a cents part as a string
@@ -165,7 +165,7 @@ string montantEnVaudois(double amount) {
 string getGroupText(int groupNumber) {
   switch (groupNumber) {
     case 1:
-      return " mille ";
+      return "mille";
     default:
       return "";
   }
@@ -254,7 +254,7 @@ string getHundredText(int number) {
   return text;
 }
 
-string convertFrancs(int number, bool accord, string groupNumberName) {
+string convertFrancs(int number, bool accord, const string &groupNumberName) {
   string text;
 
   if (number >= 100) {
@@ -279,7 +279,18 @@ string convertFrancs(int number, bool accord, string groupNumberName) {
     text += getUnitText(number);
   }
 
-  return text + groupNumberName;
+  // add group name only if the given name isn't empty
+  if (!groupNumberName.empty()) {
+    // avoid things like "un mille"
+    if (number == 1) {
+      text = groupNumberName;
+    } else {
+      text += " " + groupNumberName;
+    }
+    text += " ";
+  }
+
+  return text;
 }
 
 string convertCents(int number) {

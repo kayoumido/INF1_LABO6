@@ -109,13 +109,15 @@ string montantEnVaudois(double amount) {
   if (!checkInput(amount, MIN_AMOUNT, MAX_AMOUNT)) {
     return "ERREUR - Entree non-valide!";
   }
+
+  amount += 0.005;
   // split the francs and the cents
   int francs = (int) amount;
-  int cents = int((amount - francs + 0.005) * 100);
+  int cents = int((amount - francs) * 100);
 
   // if the user entered 0 as the amount, return 0
   if (francs == 0 and cents == 0) {
-    return getUnitText(francs) + " franc";
+    return getUnitText(francs) + " " + CURRENCY;
   }
 
   int part = francs;

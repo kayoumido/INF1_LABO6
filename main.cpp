@@ -19,6 +19,8 @@ using namespace std;
 
 const string CURRENCY = "franc";
 const string CURRENCY_CENTS = "centime";
+const double MIN_AMOUNT = 0;
+const double  MAX_AMOUNT = 999999.99;
 
 /**
  * Convert a double number in a Vaudois price.
@@ -27,6 +29,15 @@ const string CURRENCY_CENTS = "centime";
  * @return the converted amount in a string
  */
 string montantEnVaudois(double amount);
+
+/**
+ * @brief check if user's input is between min and max values
+ * @param input user's input to check
+ * @param min minimum accepted value
+ * @param max maximum accepted value
+ * @return boolean result of condition
+ */
+bool checkInput(double input, double min, double max);
 
 /**
  * @brief return corresponding text to the 0-9 integer
@@ -62,17 +73,8 @@ string getDozenText(int number);
 string getHundredText(int number);
 
 /*
- * @brief manage thousands from a double to return it as
- * his complete corresponding string(2202 = deux mille deux cent deux)
- * @param double to extract thousands from
- *
- * @return thousands' text
- */
-string manageThousands(double number);
-
-/*
  * @brief Convert integer parts of an entered number into a string
- * adding franc(s) and dealing with plurial
+ * adding franc(s) and dealing with plural
  * @param[int] number number to get as text
  * @param[bool] checkGrammar boolean to decide if we need to check
  * grammar or not
@@ -92,17 +94,19 @@ string convertCents(int number);
 
 int main() {
 
-  double d = 500500;
+  double d;
 
-  cout << montantEnVaudois(d) << endl;
-  //  while( cin >> d ) {
-  //    cout << montantEnVaudois(d) << endl;
-  //  }
+  while (cin >> d) {
+    cout << montantEnVaudois(d) << endl;
+  }
   return 0;
 }
 
 string montantEnVaudois(double amount) {
-
+  
+  if (!checkInput(amount, MIN_AMOUNT, MAX_AMOUNT)) {
+    return "ERREUR - Entree non-valide!";
+  }
   // split the francs and the cents
   int francs = (int) amount;
   int cents = int((amount - francs + 0.005) * 100);
@@ -151,44 +155,72 @@ string montantEnVaudois(double amount) {
 
 string getUnitText(int number) {
   switch (number) {
-    case 0: return "zero";
-    case 1: return "un";
-    case 2: return "deux";
-    case 3: return "trois";
-    case 4: return "quatre";
-    case 5: return "cinq";
-    case 6: return "six";
-    case 7: return "sept";
-    case 8: return "huit";
-    case 9: return "neuf";
-    default: return "UNITE ERREUR";
+    case 0:
+      return "zero";
+    case 1:
+      return "un";
+    case 2:
+      return "deux";
+    case 3:
+      return "trois";
+    case 4:
+      return "quatre";
+    case 5:
+      return "cinq";
+    case 6:
+      return "six";
+    case 7:
+      return "sept";
+    case 8:
+      return "huit";
+    case 9:
+      return "neuf";
+    default:
+      return "UNITE ERREUR";
   }
 }
 
 string getTeensText(int number) {
   switch (number) {
-    case 11: return "onze";
-    case 12: return "douze";
-    case 13: return "treize";
-    case 14: return "quatorze";
-    case 15: return "quinze";
-    case 16: return "seize";
-    default: return "TEEN ERREUR";
+    case 11:
+      return "onze";
+    case 12:
+      return "douze";
+    case 13:
+      return "treize";
+    case 14:
+      return "quatorze";
+    case 15:
+      return "quinze";
+    case 16:
+      return "seize";
+    default:
+      return "TEEN ERREUR";
   }
 }
 
 string getDozenText(int number) {
   switch (number) {
-    case 1: return "dix";
-    case 2: return "vingt";
-    case 3: return "trente";
-    case 4: return "quarante";
-    case 5: return "cinquante";
-    case 6: return "soixante";
-    case 7: return "septante";
-    case 8: return "huitante";
-    case 9: return "nonante";
-    default: return "DIXAINE ERREUR";
+    case 1:
+      return "dix";
+    case 2:
+      return "vingt";
+    case 3:
+      return "trente";
+    case 4:
+      return "quarante";
+    case 5:
+      return "cinquante";
+    case 6:
+      return "soixante";
+    case 7:
+      return "septante";
+    case 8:
+      return "huitante";
+    case 9:
+      return "nonante";
+    default:
+      return "DIXAINE ERREUR";
   }
 }
 
@@ -236,4 +268,8 @@ string convertCents(int number) {
   string text = convertFrancs(number, true) + " " + CURRENCY_CENTS;
   text += number > 1 ? "s" : "";
   return text;
+}
+
+bool checkInput(double input, double min, double max) {
+  return input >= min && input <= max;
 }

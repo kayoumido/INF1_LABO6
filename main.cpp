@@ -102,7 +102,7 @@ string getGroupText(int groupNumber);
  *                group. (see getGroupText function)
  * @return[string] text of the converted number
  */
-string convertFrancs(int number, bool accord, const string& groupNumberName);
+string convertNumberToVaudois(int number, bool accord, const string &groupNumberName);
 
 /**
  * @brief accord a numbers text
@@ -113,14 +113,21 @@ string convertFrancs(int number, bool accord, const string& groupNumberName);
  */
 void accordNumberText(int number, string& numberText);
 
-/*
- * @brief convert a given number to a cents part as a string
- * including "centimes" as suffix
+/**
+ * @brief convert currency (without cents) to text
  *
- * @param[int] cents to convert as text
+ * @param[int] number to convert
  * @return[string] text of the converted number
  */
-string convertCents(int number);
+string convertCurrency(int number);
+
+/**
+ * @brief convert cents to text
+ *
+ * @param[int] cents to convert
+ * @return[string] text of the converted number
+ */
+string convertCurrencyCents(int number);
 
 int main() {
 
@@ -139,55 +146,27 @@ string montantEnVaudois(double amount) {
   }
 
   amount += 0.005;
-  // split the francs and the cents
-  int francs = (int)amount;
-  int cents = int((amount - francs) * 100);
+  // split the currency and the cents
+  int currency = (int)amount;
+  int cents = int((amount - currency) * 100);
 
   // if the user entered 0 as the amount, return the text for 0
-  if (francs == 0 and cents == 0) {
-    return getUnitText(francs) + " " + CURRENCY;
+  if (currency == 0 and cents == 0) {
+    return getUnitText(currency) + " " + CURRENCY;
   }
 
-  int part = francs;
-  int groupNumber = 0;
-  bool accord = true;
-  string francsText;
-  while (part) {
-
-    // get the current group
-    int group = part % 1000;
-
-    francsText = convertFrancs(group, accord, getGroupText(groupNumber)) + francsText;
-
-    // remove the part that was just converted to text
-    part /= 1000;
-
-    // the groups past the first don't need their
-    // unit, dozens and hundreds to be accorded
-    // since there's a suffix after them and according
-    // to the french grammar rules regarding number,
-    // they don't need to be accorded.
-    accord = false;
-
-    // pass to the next group
-    ++groupNumber;
-  }
-
-  // add the currency to the end
-  francsText += " " + CURRENCY;
-  // check plural
-  //francsText += francs > 1 ? "s" : "";
-  accordNumberText(francs, francsText);
+  // convert main currency
+  string currencyText = convertCurrency(currency);
 
   // check if there are cents to convert.
   string centsText;
   if (cents) {
-    centsText = convertCents(cents);
+    centsText = convertCurrencyCents(cents);
   }
 
   // build the return text.
   //  if there are francs and cents the return text with both otherwise, return only the one that isn't empty
-  return francs and cents ? francsText + " et " + centsText : francs ? francsText : cents ? centsText : "";
+  return currency and cents ? currencyText + " et " + centsText : currency ? currencyText : cents ? centsText : "";
 }
 
 string getGroupText(int groupNumber) {
@@ -282,7 +261,7 @@ string getHundredText(int number) {
   return text;
 }
 
-string convertFrancs(int number, bool accord, const string& groupNumberName) {
+string convertNumberToVaudois(int number, bool accord, const string &groupNumberName) {
   string text;
 
   if (number >= 100) {
@@ -330,8 +309,38 @@ string convertFrancs(int number, bool accord, const string& groupNumberName) {
   return text;
 }
 
-string convertCents(int number) {
-  string text = convertFrancs(number, true, "") + " " + CURRENCY_CENTS;
+string convertCurrency(int number) {
+  int part = number;
+  int groupNumber = 0;
+  bool accord = true;
+  string text;
+  while (part) {
+
+    // get the current group
+    int group = part % 1000;
+
+    text = convertNumberToVaudois(group, accord, getGroupText(groupNumber)) + text;
+
+    // remove the part that was just converted to text
+    part /= 1000;
+
+    // the groups past the first don't need their
+    // unit, dozens and hundreds to be accorded
+    accord = false;
+
+    // pass to the next group
+    ++groupNumber;
+  }
+
+  // add the currency to the end
+  text += " " + CURRENCY;
+  accordNumberText(number, text);
+
+  return text;
+}
+
+string convertCurrencyCents(int number) {
+  string text = convertNumberToVaudois(number, true, "") + " " + CURRENCY_CENTS;
 
   accordNumberText(number, text);
   return text;

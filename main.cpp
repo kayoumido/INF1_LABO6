@@ -268,8 +268,7 @@ string convertNumberToVaudois(int number, bool accord, const string &groupNumber
     text += getHundredText(number / 100);
 
     // the text is accorded only if it's desired.
-    // if it is, then we check that the number isn't 100
-    // and that there isn't anything afterwards.
+    // if it is, then we check that there isn't anything afterwards.
     //  e.g. 230 -> doesn't take an "s"
     //       200 -> takes an "s"
     if (accord and number % 100 == 0)
